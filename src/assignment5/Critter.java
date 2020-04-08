@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.layout.*;
 import javafx.scene.shape.*;
@@ -198,17 +199,14 @@ public abstract class Critter {
     }
 
     /**
-     * Creates a new window of the world with its critters
+     * updates the world (GridPane) to show the current critter population
      * @param pane - Object (GridPane) on which to paint the world
      */
     public static void displayWorld(Object pane) {
-    	Stage stage = new Stage();
         GridPane world = (GridPane) pane;
         world.setHgap(0.0);
         world.setVgap(0.0);
-        Scene scene = new Scene(world, cellSize * (Params.WORLD_WIDTH + 1), cellSize * (Params.WORLD_HEIGHT + 1));
-        stage.setScene(scene);
-        stage.show();
+        //Scene scene = new Scene(world, cellSize * (Params.WORLD_WIDTH + 1), cellSize * (Params.WORLD_HEIGHT + 1));
         paintCritters(world);  
     }
     
@@ -216,16 +214,16 @@ public abstract class Critter {
      * displayWorld helper function that adds cells and critters to world
      * @param grid - GridPane on which to paint the world
      */
-    private static void paintCritters(GridPane grid) {
-    	grid.getChildren().clear();
-    	paintGridLines(grid);
+    private static void paintCritters(GridPane world) {
+    	world.getChildren().clear();
+    	paintGridLines(world);
     	for(int i = 0; i < Params.WORLD_WIDTH; i++) {
     		for(int j = 0; j < Params.WORLD_HEIGHT; j++) {
     			boolean empty = true;
     			for(Critter crit : population) {
     				if(crit.x_coord == i && crit.y_coord == j && empty) {
     					Shape s = getCritterShape(crit);
-    					grid.add(s, i, j);
+    					world.add(s, i, j);
     					empty = false;
     				}
     			}
@@ -282,8 +280,9 @@ public abstract class Critter {
 	    							cellSize, cellSize,
 	    							cellSize / 2, 3 * cellSize / 4,
 	    							0.0, cellSize,
-	    							cellSize / 4, cellSize / 2});
-	    	default: critShape = new Circle(cellSize/2, Color.WHITESMOKE);
+	    							cellSize / 4, cellSize / 2}); 
+	    					critShape = star; break;
+	    	default: critShape = new Circle(cellSize/2, Color.WHITESMOKE); break;
     	}
     	critShape.setFill(crit.viewFillColor()); // set fill color
     	critShape.setStroke(crit.viewOutlineColor()); // set outline color
