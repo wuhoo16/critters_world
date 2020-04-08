@@ -20,6 +20,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import javafx.scene.Scene;
+import javafx.scene.layout.*;
+import javafx.scene.shape.*;
+import javafx.stage.Stage;
+import javafx.scene.paint.*;
+
 /*
  * See the PDF for descriptions of the methods and fields in this
  * class.
@@ -39,6 +45,7 @@ public abstract class Critter {
         STAR
     }
 
+    private static double cellSize = 10;
     /* the default color is white, which I hope makes critters invisible by default
      * If you change the background color of your View component, then update the default
      * color to be the same as you background
@@ -190,9 +197,97 @@ public abstract class Critter {
         return null;
     }
 
-
+    /**
+     * Creates a new window of the world with its critters
+     * @param pane - Object (GridPane) on which to paint the world
+     */
     public static void displayWorld(Object pane) {
-        // TODO Implement this method
+    	Stage stage = new Stage();
+        GridPane world = (GridPane) pane;
+        world.setHgap(0.0);
+        world.setVgap(0.0);
+        Scene scene = new Scene(world, cellSize * (Params.WORLD_WIDTH + 1), cellSize * (Params.WORLD_HEIGHT + 1));
+        stage.setScene(scene);
+        stage.show();
+        paintCritters(world);  
+    }
+    
+    /**
+     * displayWorld helper function that adds cells and critters to world
+     * @param grid - GridPane on which to paint the world
+     */
+    private static void paintCritters(GridPane grid) {
+    	grid.getChildren().clear();
+    	paintGridLines(grid);
+    	for(int i = 0; i < Params.WORLD_WIDTH; i++) {
+    		for(int j = 0; j < Params.WORLD_HEIGHT; j++) {
+    			boolean empty = true;
+    			for(Critter crit : population) {
+    				if(crit.x_coord == i && crit.y_coord == j && empty) {
+    					Shape s = getCritterShape(crit);
+    					grid.add(s, i, j);
+    					empty = false;
+    				}
+    			}
+    		}
+    	}
+    }
+    
+    /**
+     * paintCritters helper function that adds cells to world
+     * @param grid - GridPane on which to paint the world
+     */
+    private static void paintGridLines(GridPane grid) {
+    	for(int i = 0; i < Params.WORLD_WIDTH; i++) {
+    		for(int j = 0; j < Params.WORLD_HEIGHT; j++) {
+    			Shape cell = new Rectangle(cellSize, cellSize);
+    			cell.setFill(Color.WHITE); // default
+    			cell.setStroke(Color.DIMGREY);
+    			grid.add(cell,  i, j);
+    		}
+    	}
+    }
+    
+    /**
+     * paintCritters helper function
+     * @param crit - Critter to return Shape of
+     * @return - Shape of crit, with its fill and outline
+     */
+    private static Shape getCritterShape(Critter crit) {
+    	// set Shape
+    	CritterShape s = crit.viewShape();
+    	Shape critShape;
+    	switch(s) {
+	    	case CIRCLE: critShape = new Circle(cellSize/2); break;
+	    	case SQUARE: critShape = new Rectangle(cellSize, cellSize); break;
+	    	case TRIANGLE: Polygon triangle = new Polygon();
+	    					triangle.getPoints().addAll(new Double[] {
+	    							cellSize / 2, 0.0,
+	    							0.0,  cellSize,
+	    							cellSize,  cellSize });
+	    					critShape = triangle; break;   					
+	    	case DIAMOND: Polygon diamond = new Polygon();
+	    					diamond.getPoints().addAll(new Double[] {
+	    							cellSize / 2, 0.0,
+	    							cellSize, cellSize / 2,
+	    							cellSize / 2, cellSize,
+	    							0.0, cellSize / 2});
+	    					critShape = diamond; break;
+	    	case STAR: Polygon star = new Polygon();
+	    					star.getPoints().addAll(new Double[] {
+	    							0.0, 0.0,
+	    							cellSize / 2, cellSize / 4,
+	    							cellSize, 0.0,
+	    							3 * cellSize / 4, cellSize / 2,
+	    							cellSize, cellSize,
+	    							cellSize / 2, 3 * cellSize / 4,
+	    							0.0, cellSize,
+	    							cellSize / 4, cellSize / 2});
+	    	default: critShape = new Circle(cellSize/2, Color.WHITESMOKE);
+    	}
+    	critShape.setFill(crit.viewFillColor()); // set fill color
+    	critShape.setStroke(crit.viewOutlineColor()); // set outline color
+    	return critShape;
     }
 
 	/* END --- NEW FOR PROJECT 5
