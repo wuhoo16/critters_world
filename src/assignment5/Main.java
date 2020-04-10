@@ -24,49 +24,131 @@ public class Main extends Application {
     	GridPane world = new GridPane();
     	Critter.displayWorld(world); // create empty grid
     	
-    	// Controller containing all command inputs
-    	GridPane controller = new GridPane();
     	// doTimeStep
     	Label timeStep_l = new Label("Do Time Step");
-    	Button timeStep_bt = new Button("Time step(s)");
+    	TextField timeStep_ct = new TextField();
+    	timeStep_ct.setPrefColumnCount(5);
+    	timeStep_ct.setPromptText("Steps");
+    	Button timeStep_bt = new Button("Step");
+    	Text timeStep_err = new Text("");
+    	VBox doTimeStep = new VBox(1,
+    			timeStep_l,
+    			new HBox(timeStep_ct, timeStep_bt, timeStep_err));
     	
-    	controller.add(timeStep_l, 0, 0);
-    	controller.add(timeStep_bt, 0, 1);
     	timeStep_bt.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				Critter.worldTimeStep();
-				Critter.displayWorld(world);		
+				try {
+					timeStep_err.setText("");
+					int steps = 1;
+					String step_String = timeStep_ct.getText();
+					if(!step_String.equals("")) steps = Integer.parseInt(step_String);		
+					for(int i = 0; i < steps; i++) {
+						Critter.worldTimeStep();
+					}
+					Critter.displayWorld(world);		
+				} catch (NumberFormatException e) {
+					timeStep_err.setText("Invalid step count");
+				}
 			}
     	});
-    	// createCritter (Eventually change to TextField + drop down menu)
-    	Label createCritter_l = new Label("Create Critter");
-    	Button createCritter_bt = new Button("Create");
-    	TextField createCritter_name = new TextField();
-    	createCritter_name.setPromptText("Enter a Critter class");
-    	Text createCritter_err = new Text("");
     	
-    	controller.add(createCritter_l, 0, 2);
-    	controller.add(createCritter_name, 0, 3);
-    	controller.add(createCritter_bt, 1, 3);
-    	controller.add(createCritter_err, 2, 3);
+    	// createCritter
+    	Label createCritter_l = new Label("Create Critter");
+    	TextField createCritter_name = new TextField();
+    	createCritter_name.setPrefColumnCount(5);
+    	createCritter_name.setPromptText("Class");
+    	TextField createCritter_ct = new TextField();
+    	createCritter_ct.setPrefColumnCount(5);
+    	createCritter_ct.setPromptText("Count");
+    	Button createCritter_bt = new Button("Create");
+    	Text createCritter_err = new Text("");
+    	VBox createCritter = new VBox(1, 
+    			createCritter_l, 
+    			new HBox(createCritter_name, createCritter_ct, createCritter_bt, createCritter_err));
+
     	createCritter_bt.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
 				try {
 					createCritter_err.setText("");
+					int count = 1;
 					String critter_class_name = createCritter_name.getText();
-					Critter.createCritter(critter_class_name);
+					String count_String = createCritter_ct.getText();
+					if(!count_String.equals("")) count = Integer.parseInt(count_String);
+					for(int i = 0; i < count; i++) {
+						Critter.createCritter(critter_class_name);
+					}
 					Critter.displayWorld(world);
 				} catch (InvalidCritterException e) {
 					createCritter_err.setText("Invalid Critter");
+				} catch (NumberFormatException e) {
+					createCritter_err.setText("Invalid Critter count");
 				}
 			}
     	});
     	
+    	// runStats
+    	Label runStats_l = new Label("Run Critter stats");
+    	// will add functionality to show multiple Critter stats at once
+    	TextField runStats_name = new TextField();
+    	runStats_name.setPrefColumnCount(5);
+    	runStats_name.setPromptText("Class");
+    	Button runStats_bt = new Button("Run");
+    	Text runStats_err = new Text("");
+    	VBox runStats = new VBox(1,
+    			runStats_l,
+    			new HBox(runStats_name, runStats_bt, runStats_err));
+    	runStats_bt.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				// TODO
+			}
+    	});
+    	
+    	// setSeed
+    	Label setSeed_l = new Label("Set seed");
+    	TextField setSeed_num = new TextField();
+    	setSeed_num.setPrefColumnCount(5);
+    	setSeed_num.setPromptText("Seed");
+    	Button setSeed_bt = new Button("Set");
+    	Text setSeed_err = new Text("");
+    	VBox setSeed = new VBox(1,
+    			setSeed_l,
+    			new HBox(setSeed_num, setSeed_bt, setSeed_err));
+    	
+    	setSeed_bt.setOnAction(new EventHandler<ActionEvent>() {
+    		@Override
+    		public void handle(ActionEvent event) {
+    			try {
+    				setSeed_err.setText("");
+        			String seed_String = setSeed_num.getText();
+        			int seed = Integer.parseInt(seed_String);
+        			Critter.setSeed(seed);
+    			} catch(NumberFormatException e) {
+    				setSeed_err.setText("Invalid seed");
+    			}			
+    		}
+    	});
+    	
+    	// quit
+    	Button quit = new Button("Quit");
+    	quit.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {System.exit(0);}
+    	});
+    	
+    	// Controller containing all command inputs
+    	VBox controller = new VBox(5, 
+    			doTimeStep,
+    			createCritter,
+    			runStats,
+    			setSeed,
+    			quit);
     	root.add(world, 0, 0);
     	root.add(controller, 1, 0);
     	primaryStage.setScene(new Scene(root, 500, 250));
+    	primaryStage.setTitle("Critters II: Jin Lee and Andy Wu");
     	primaryStage.show();
     }
 }
