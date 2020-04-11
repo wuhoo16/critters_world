@@ -137,6 +137,7 @@ public class Critter2 extends Critter {
     	int numSeniors = 0;
     	int currentYoungest = Integer.MAX_VALUE;
     	int currentOldest = -1;
+    	String statsString = "";
     	
     	for (Critter person: people) {
     		Critter2 human = (Critter2) person;
@@ -166,24 +167,22 @@ public class Critter2 extends Critter {
     		}
     	}
     	
-    	System.out.print(people.size() + " total human(s):   ");
-    	System.out.print(totalM + " male(s)    ");
-    	System.out.print(totalF + " female(s)    ");
-    	System.out.print(numChildren + " children    ");
-    	System.out.print(numAdults + " adult(s)    ");
-    	System.out.print(numSeniors + " senior(s)    ");
+    	statsString += (people.size() + " total humans: \n");
+    	statsString += (totalM + " males \n");
+    	statsString += (totalF + " females \n");
+    	statsString += (numChildren + " children \n");
+    	statsString += (numAdults + " adults \n");
+    	statsString += (numSeniors + " seniors \n");
     	if (people.size() == 0) {
-    		System.out.print("N/A = youngest human    ");
-    		System.out.print("N/A = oldest human");
+    		statsString += ("N/A = youngest human \n");
+    		statsString += ("N/A = oldest human");
     	}
     	else {
-    		System.out.print(currentYoungest + " = youngest human's age    ");
-    		System.out.print(currentOldest + " = oldest human's age");
+    		statsString += (currentYoungest + " = youngest human's age \n");
+    		statsString += (currentOldest + " = oldest human's age");
     	}
-        System.out.println();
         
-        // TODO: write actual return
-        return "";
+        return statsString;
     }
 
 }

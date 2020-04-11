@@ -74,21 +74,26 @@ public class Goblin extends Critter {
             total_back += c.genes[4];
             total_left += c.genes[5] + c.genes[6] + c.genes[7];
         }
-        str += ("" + goblins.size() + " total Craigs    \n");
-        str += ("" + total_straight / (GENE_TOTAL * 0.01 * goblins.size()) + "% straight   \n");
-        str += ("" + total_back / (GENE_TOTAL * 0.01 * goblins.size()) + "% back   \n");
-        str += ("" + total_right / (GENE_TOTAL * 0.01 * goblins.size()) + "% right   \n");
-        str += ("" + total_left / (GENE_TOTAL * 0.01 * goblins.size()) + "% left   \n");
+        str += (goblins.size() + " total Goblins    \n");
+        str += (total_straight / (GENE_TOTAL * 0.01 * goblins.size()) + "% straight \n");
+        str += ("" + total_back / (GENE_TOTAL * 0.01 * goblins.size()) + "% back \n");
+        str += ("" + total_right / (GENE_TOTAL * 0.01 * goblins.size()) + "% right \n");
+        str += ("" + total_left / (GENE_TOTAL * 0.01 * goblins.size()) + "% left \n");
         return str;
     }
 
     @Override
     public CritterShape viewShape() {
-        return CritterShape.SQUARE;
+        return CritterShape.TRIANGLE;
     }
 
     @Override
     public javafx.scene.paint.Color viewOutlineColor() {
-        return javafx.scene.paint.Color.BLUE;
+        return javafx.scene.paint.Color.BLACK;
+    }
+    
+    @Override
+    public javafx.scene.paint.Color viewColor() {
+        return javafx.scene.paint.Color.GREEN;
     }
 }

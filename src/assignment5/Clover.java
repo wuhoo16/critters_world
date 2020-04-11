@@ -28,6 +28,11 @@ public class Clover extends TestCritter {
     public CritterShape viewShape() {
         return CritterShape.CIRCLE;
     }
+    
+    @Override
+    public javafx.scene.paint.Color viewOutlineColor() {
+        return javafx.scene.paint.Color.BLACK;
+    }
 
     public javafx.scene.paint.Color viewColor() {
         return javafx.scene.paint.Color.GREEN;

@@ -152,6 +152,7 @@ public class Critter1 extends Critter {
     	int totalB = 0;
     	int currentMin = Integer.MAX_VALUE;
     	int currentMax = -1;
+    	String statsString = "";
     	
     	for (Critter crit: viruses) {
     		Critter1 coronavirus = (Critter1) crit;
@@ -171,20 +172,18 @@ public class Critter1 extends Critter {
     		}
     	}
     	
-    	System.out.print(viruses.size() + " total Coronavirus:   ");
-    	System.out.print(totalA + " \"16A\" strain(s)    ");
-    	System.out.print(totalB + " \"16B\" strain(s)    ");
+    	statsString += (viruses.size() + " total Coronavirus: \n");
+    	statsString += (totalA + " 16A-strains \n");
+    	statsString += (totalB + " 16B-strains \n");
     	if (viruses.size() == 0) {
-    		System.out.print("N/A = weakest contagion level    ");
-        	System.out.print("N/A = strongest contagion level");
+    		statsString += ("N/A = weakest contagion level \n");
+    		statsString += ("N/A = strongest contagion level");
     	}
     	else {
-	    	System.out.print(currentMin + " = weakest contagion level    ");
-	    	System.out.print(currentMax + " = strongest contagion level");
+    		statsString += (currentMin + " = weakest contagion level \n");
+    		statsString += (currentMax + " = strongest contagion level");
     	}
-        System.out.println();
         
-        // TODO: write actual return
-        return "";
+        return statsString;
     }   
 }

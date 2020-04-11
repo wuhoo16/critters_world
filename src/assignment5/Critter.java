@@ -17,7 +17,9 @@
 package assignment5;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import javafx.geometry.Pos;
@@ -312,9 +314,31 @@ public abstract class Critter {
     	return null; // location is unoccupied
     }
 
+    /**
+     * Prints out how many Critters of each type there are on the board.
+     * This static method is run if the user specifies a class that does not have an overridden runStats method.
+     *
+     * @param critters List of Critters
+     * @return String
+     */	
     public static String runStats(List<Critter> critters) {
-        // TODO Implement this method
-        return null;
+    	String statsString = "";
+    	
+		statsString += (critters.size() + " critters as follows ---");
+		statsString += "\n";
+		
+        Map<String, Integer> critter_count = new HashMap<String, Integer>();
+        for (Critter crit : critters) {
+            String crit_string = crit.toString();
+            critter_count.put(crit_string,
+                    critter_count.getOrDefault(crit_string, 0) + 1);
+        }
+        
+        for (String critterSymbol: critter_count.keySet()) {
+            statsString += (critterSymbol + ": " + critter_count.get(critterSymbol));
+            statsString += ("\n");
+        }
+        return statsString;
     }
 
     /**
