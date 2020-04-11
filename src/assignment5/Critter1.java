@@ -43,12 +43,12 @@ public class Critter1 extends Critter {
 	
 	@Override
     public javafx.scene.paint.Color viewOutlineColor() {
-        return javafx.scene.paint.Color.GREEN;
+        return javafx.scene.paint.Color.BLACK;
     }
 	
 	@Override
     public javafx.scene.paint.Color viewFillColor() {
-        return viewColor();
+		return javafx.scene.paint.Color.PINK;
     }
 	/* END - NEW PROJECT 5 */
 	

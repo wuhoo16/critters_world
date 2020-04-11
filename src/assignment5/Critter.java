@@ -46,7 +46,8 @@ public abstract class Critter {
         STAR
     }
 
-    private static double cellSize = 10;
+
+    private static double cellSize = 20;
     /* the default color is white, which I hope makes critters invisible by default
      * If you change the background color of your View component, then update the default
      * color to be the same as you background
@@ -79,117 +80,235 @@ public abstract class Critter {
     	if(steps) num = 2;
     	else num = 1;
     	
-    	if (direction == 0) {// E
-			for (Critter crit: population) {
-				if (crit.x_coord == (this.x_coord + num) % Params.WORLD_WIDTH && crit.y_coord == this.y_coord && crit.energy > 0) {
-					return crit.toString();
-				}
-			}
-		} 
-		else if (direction == 1) {// NE
-			for (Critter crit: population) {
-				if (crit.energy > 0) { // skip critters that died from encounters
-					if (this.y_coord - num >= 0) {
-						if (crit.x_coord == (this.x_coord + num) % Params.WORLD_WIDTH && crit.y_coord == this.y_coord - num) {
-							return crit.toString();
-						}
-					}
-					else { // if movement causes critter to exit top of world
-						if (crit.x_coord == (this.x_coord + num) % Params.WORLD_WIDTH && crit.y_coord == Params.WORLD_HEIGHT + this.y_coord - num) {
-							return crit.toString();
-						}
+    	if (this.inEncounter) { // must compare with all other critters' old positions
+    		if (direction == 0) {// E
+				for (Critter crit: previousPopulation) {
+					if (crit.x_coord == (this.x_coord + num) % Params.WORLD_WIDTH && crit.y_coord == this.y_coord && crit.energy > 0) {
+						return crit.toString();
 					}
 				}
-			}
-		} 
-		else if (direction == 2) {// N
-			for (Critter crit: population) {
-				if (crit.energy > 0) { // skip dead critters
-					if (this.y_coord - num >= 0) {
-						if (crit.x_coord == this.x_coord && crit.y_coord == this.y_coord - num) {
-							return crit.toString();
+			} 
+			else if (direction == 1) {// NE
+				for (Critter crit: previousPopulation) {
+					if (crit.energy > 0) { // skip critters that died from encounters
+						if (this.y_coord - num >= 0) {
+							if (crit.x_coord == (this.x_coord + num) % Params.WORLD_WIDTH && crit.y_coord == this.y_coord - num) {
+								return crit.toString();
+							}
 						}
-					}
-					else { // if movement causes critter to exit top of the world
-						if (crit.x_coord == this.x_coord && crit.y_coord == Params.WORLD_HEIGHT + this.y_coord - num) {
-							return crit.toString();
+						else { // if movement causes critter to exit top of world
+							if (crit.x_coord == (this.x_coord + num) % Params.WORLD_WIDTH && crit.y_coord == Params.WORLD_HEIGHT + this.y_coord - num) {
+								return crit.toString();
+							}
 						}
 					}
 				}
-			}
-		} 
-		else if (direction == 3) {// NW
-			for (Critter crit: population) {
-				if (crit.energy > 0) {
-					if (this.x_coord - num >= 0 && this.y_coord - num >= 0 ) { // normal check
-						if (crit.x_coord == this.x_coord - num && crit.y_coord == this.y_coord) {
-							return crit.toString();
+			} 
+			else if (direction == 2) {// N
+				for (Critter crit: previousPopulation) {
+					if (crit.energy > 0) { // skip dead critters
+						if (this.y_coord - num >= 0) {
+							if (crit.x_coord == this.x_coord && crit.y_coord == this.y_coord - num) {
+								return crit.toString();
+							}
 						}
-					}
-					else if (this.x_coord - num < 0 && this.y_coord - num >= 0) { // if movement will cause critter to exit left of world 
-						if (crit.x_coord == Params.WORLD_WIDTH + this.x_coord - num && crit.y_coord == this.y_coord) {
-							return crit.toString();
-						}
-					}
-					else if (this.x_coord - num >= 0 && this.y_coord - num < 0) { // if movement will cause critter to exit top of the world
-						if (crit.x_coord == this.x_coord - num && crit.y_coord == Params.WORLD_HEIGHT + this.y_coord - num) {
-							return crit.toString();
-						}
-					}
-					else { // if movement will cause loop around on both x and y axes
-						if (crit.x_coord == Params.WORLD_WIDTH + this.x_coord - num && crit.y_coord == Params.WORLD_HEIGHT + this.y_coord - num) {
-							return crit.toString();
+						else { // if movement causes critter to exit top of the world
+							if (crit.x_coord == this.x_coord && crit.y_coord == Params.WORLD_HEIGHT + this.y_coord - num) {
+								return crit.toString();
+							}
 						}
 					}
 				}
-			}
-		} 
-		else if (direction == 4) {// W
-			for (Critter crit: population) {
-				if (crit.energy > 0) {
-					if (crit.x_coord - num >= 0) {
-						if (crit.x_coord == this.x_coord - num && crit.y_coord == this.y_coord) {
-							return crit.toString();
+			} 
+			else if (direction == 3) {// NW
+				for (Critter crit: previousPopulation) {
+					if (crit.energy > 0) {
+						if (this.x_coord - num >= 0 && this.y_coord - num >= 0 ) { // normal check
+							if (crit.x_coord == this.x_coord - num && crit.y_coord == this.y_coord) {
+								return crit.toString();
+							}
 						}
-					}
-					else {
-						if (crit.x_coord == Params.WORLD_WIDTH + this.x_coord - num && crit.y_coord == this.y_coord) {
-							return crit.toString();
+						else if (this.x_coord - num < 0 && this.y_coord - num >= 0) { // if movement will cause critter to exit left of world 
+							if (crit.x_coord == Params.WORLD_WIDTH + this.x_coord - num && crit.y_coord == this.y_coord) {
+								return crit.toString();
+							}
 						}
-					}
-				}
-			}
-		} 
-		else if (direction == 5) {// SW
-			for (Critter crit: population) {
-				if (crit.energy > 0) {
-					if (crit.x_coord - num >= 0) {
-						if (crit.x_coord == this.x_coord - num && crit.y_coord == (this.y_coord + num) % Params.WORLD_HEIGHT) {
-							return crit.toString();
+						else if (this.x_coord - num >= 0 && this.y_coord - num < 0) { // if movement will cause critter to exit top of the world
+							if (crit.x_coord == this.x_coord - num && crit.y_coord == Params.WORLD_HEIGHT + this.y_coord - num) {
+								return crit.toString();
+							}
 						}
-					}
-					else {
-						if (crit.x_coord == Params.WORLD_WIDTH + this.x_coord - num && crit.y_coord == (this.y_coord + num) % Params.WORLD_HEIGHT) {
-							return crit.toString();
+						else { // if movement will cause loop around on both x and y axes
+							if (crit.x_coord == Params.WORLD_WIDTH + this.x_coord - num && crit.y_coord == Params.WORLD_HEIGHT + this.y_coord - num) {
+								return crit.toString();
+							}
 						}
 					}
 				}
-			}
-		} 
-		else if (direction == 6) {// S
-			for (Critter crit: population) {
-				if (crit.x_coord == this.x_coord && crit.y_coord == (this.y_coord + num) % Params.WORLD_HEIGHT && crit.energy > 0) {
-					return crit.toString();
+			} 
+			else if (direction == 4) {// W
+				for (Critter crit: previousPopulation) {
+					if (crit.energy > 0) {
+						if (crit.x_coord - num >= 0) {
+							if (crit.x_coord == this.x_coord - num && crit.y_coord == this.y_coord) {
+								return crit.toString();
+							}
+						}
+						else {
+							if (crit.x_coord == Params.WORLD_WIDTH + this.x_coord - num && crit.y_coord == this.y_coord) {
+								return crit.toString();
+							}
+						}
+					}
+				}
+			} 
+			else if (direction == 5) {// SW
+				for (Critter crit: previousPopulation) {
+					if (crit.energy > 0) {
+						if (crit.x_coord - num >= 0) {
+							if (crit.x_coord == this.x_coord - num && crit.y_coord == (this.y_coord + num) % Params.WORLD_HEIGHT) {
+								return crit.toString();
+							}
+						}
+						else {
+							if (crit.x_coord == Params.WORLD_WIDTH + this.x_coord - num && crit.y_coord == (this.y_coord + num) % Params.WORLD_HEIGHT) {
+								return crit.toString();
+							}
+						}
+					}
+				}
+			} 
+			else if (direction == 6) {// S
+				for (Critter crit: previousPopulation) {
+					if (crit.x_coord == this.x_coord && crit.y_coord == (this.y_coord + num) % Params.WORLD_HEIGHT && crit.energy > 0) {
+						return crit.toString();
+					}
+				}
+			} 
+			else if (direction == 7) {// SE
+				for (Critter crit: previousPopulation) {
+					if (crit.x_coord == (this.x_coord + num) % Params.WORLD_WIDTH && crit.y_coord == (this.y_coord + num) % Params.WORLD_HEIGHT && crit.energy > 0) {
+						return crit.toString();
+					}
 				}
 			}
-		} 
-		else if (direction == 7) {// SE
-			for (Critter crit: population) {
-				if (crit.x_coord == (this.x_coord + num) % Params.WORLD_WIDTH && crit.y_coord == (this.y_coord + num) % Params.WORLD_HEIGHT && crit.energy > 0) {
-					return crit.toString();
+    		
+    		
+    		
+    	}
+    	else { // current Critter is in an encounter and has called look() from within a fight (need to compare with other critter's current positions)
+	    	if (direction == 0) {// E
+				for (Critter crit: population) {
+					if (crit.x_coord == (this.x_coord + num) % Params.WORLD_WIDTH && crit.y_coord == this.y_coord && crit.energy > 0) {
+						return crit.toString();
+					}
+				}
+			} 
+			else if (direction == 1) {// NE
+				for (Critter crit: population) {
+					if (crit.energy > 0) { // skip critters that died from encounters
+						if (this.y_coord - num >= 0) {
+							if (crit.x_coord == (this.x_coord + num) % Params.WORLD_WIDTH && crit.y_coord == this.y_coord - num) {
+								return crit.toString();
+							}
+						}
+						else { // if movement causes critter to exit top of world
+							if (crit.x_coord == (this.x_coord + num) % Params.WORLD_WIDTH && crit.y_coord == Params.WORLD_HEIGHT + this.y_coord - num) {
+								return crit.toString();
+							}
+						}
+					}
+				}
+			} 
+			else if (direction == 2) {// N
+				for (Critter crit: population) {
+					if (crit.energy > 0) { // skip dead critters
+						if (this.y_coord - num >= 0) {
+							if (crit.x_coord == this.x_coord && crit.y_coord == this.y_coord - num) {
+								return crit.toString();
+							}
+						}
+						else { // if movement causes critter to exit top of the world
+							if (crit.x_coord == this.x_coord && crit.y_coord == Params.WORLD_HEIGHT + this.y_coord - num) {
+								return crit.toString();
+							}
+						}
+					}
+				}
+			} 
+			else if (direction == 3) {// NW
+				for (Critter crit: population) {
+					if (crit.energy > 0) {
+						if (this.x_coord - num >= 0 && this.y_coord - num >= 0 ) { // normal check
+							if (crit.x_coord == this.x_coord - num && crit.y_coord == this.y_coord) {
+								return crit.toString();
+							}
+						}
+						else if (this.x_coord - num < 0 && this.y_coord - num >= 0) { // if movement will cause critter to exit left of world 
+							if (crit.x_coord == Params.WORLD_WIDTH + this.x_coord - num && crit.y_coord == this.y_coord) {
+								return crit.toString();
+							}
+						}
+						else if (this.x_coord - num >= 0 && this.y_coord - num < 0) { // if movement will cause critter to exit top of the world
+							if (crit.x_coord == this.x_coord - num && crit.y_coord == Params.WORLD_HEIGHT + this.y_coord - num) {
+								return crit.toString();
+							}
+						}
+						else { // if movement will cause loop around on both x and y axes
+							if (crit.x_coord == Params.WORLD_WIDTH + this.x_coord - num && crit.y_coord == Params.WORLD_HEIGHT + this.y_coord - num) {
+								return crit.toString();
+							}
+						}
+					}
+				}
+			} 
+			else if (direction == 4) {// W
+				for (Critter crit: population) {
+					if (crit.energy > 0) {
+						if (crit.x_coord - num >= 0) {
+							if (crit.x_coord == this.x_coord - num && crit.y_coord == this.y_coord) {
+								return crit.toString();
+							}
+						}
+						else {
+							if (crit.x_coord == Params.WORLD_WIDTH + this.x_coord - num && crit.y_coord == this.y_coord) {
+								return crit.toString();
+							}
+						}
+					}
+				}
+			} 
+			else if (direction == 5) {// SW
+				for (Critter crit: population) {
+					if (crit.energy > 0) {
+						if (crit.x_coord - num >= 0) {
+							if (crit.x_coord == this.x_coord - num && crit.y_coord == (this.y_coord + num) % Params.WORLD_HEIGHT) {
+								return crit.toString();
+							}
+						}
+						else {
+							if (crit.x_coord == Params.WORLD_WIDTH + this.x_coord - num && crit.y_coord == (this.y_coord + num) % Params.WORLD_HEIGHT) {
+								return crit.toString();
+							}
+						}
+					}
+				}
+			} 
+			else if (direction == 6) {// S
+				for (Critter crit: population) {
+					if (crit.x_coord == this.x_coord && crit.y_coord == (this.y_coord + num) % Params.WORLD_HEIGHT && crit.energy > 0) {
+						return crit.toString();
+					}
+				}
+			} 
+			else if (direction == 7) {// SE
+				for (Critter crit: population) {
+					if (crit.x_coord == (this.x_coord + num) % Params.WORLD_WIDTH && crit.y_coord == (this.y_coord + num) % Params.WORLD_HEIGHT && crit.energy > 0) {
+						return crit.toString();
+					}
 				}
 			}
-		}
+    	}
     	return null; // location is unoccupied
     }
 
@@ -260,26 +379,26 @@ public abstract class Critter {
 	    	case SQUARE: critShape = new Rectangle(cellSize, cellSize); break;
 	    	case TRIANGLE: Polygon triangle = new Polygon();
 	    					triangle.getPoints().addAll(new Double[] {
-	    							cellSize / 2, 0.0,
-	    							0.0,  cellSize,
-	    							cellSize,  cellSize });
+	    							cellSize / 2, 1.0,
+	    							1.0,  cellSize - 1,
+	    							cellSize - 1,  cellSize - 1});
 	    					critShape = triangle; break;   					
 	    	case DIAMOND: Polygon diamond = new Polygon();
 	    					diamond.getPoints().addAll(new Double[] {
-	    							cellSize / 2, 0.0,
-	    							cellSize, cellSize / 2,
-	    							cellSize / 2, cellSize,
-	    							0.0, cellSize / 2});
+	    							cellSize/2, 1.0,
+	    							cellSize - 1, cellSize / 2,
+	    							cellSize / 2, cellSize - 1,
+	    							1.0, cellSize / 2});
 	    					critShape = diamond; break;
 	    	case STAR: Polygon star = new Polygon();
 	    					star.getPoints().addAll(new Double[] {
-	    							0.0, 0.0,
+	    							1.0, 1.0,
 	    							cellSize / 2, cellSize / 4,
-	    							cellSize, 0.0,
+	    							cellSize - 1, 1.0,
 	    							3 * cellSize / 4, cellSize / 2,
-	    							cellSize, cellSize,
+	    							cellSize - 1, cellSize - 1,
 	    							cellSize / 2, 3 * cellSize / 4,
-	    							0.0, cellSize,
+	    							1.0, cellSize - 1,
 	    							cellSize / 4, cellSize / 2}); 
 	    					critShape = star; break;
 	    	default: critShape = new Circle(cellSize/2, Color.WHITESMOKE); break;
@@ -301,6 +420,7 @@ public abstract class Critter {
     private boolean moved = false;
     private boolean inEncounter = false;
 
+    private static List<Critter> previousPopulation = new ArrayList<Critter>();
     private static List<Critter> population = new ArrayList<Critter>();
     private static List<Critter> babies = new ArrayList<Critter>();
 
@@ -343,6 +463,7 @@ public abstract class Critter {
 			newCritter.inEncounter = false;
 			
 			population.add(newCritter);
+			previousPopulation.add(newCritter); // in case look() is called right after a create commmand we need to positions of these critters
 		} catch (ReflectiveOperationException e) {
 			throw new InvalidCritterException(critter_class_name);
 		} catch (NoClassDefFoundError e) {
@@ -417,6 +538,10 @@ public abstract class Critter {
 
     	// 7.) Cull dead critters
     	Critter.cull();  
+    	
+    	// save the state of the population before any movement in the next timestep (for look() functionality)
+    	previousPopulation.clear();
+    	previousPopulation.addAll(population);
     }
 
     public abstract void doTimeStep();

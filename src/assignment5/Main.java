@@ -3,6 +3,8 @@ package assignment5;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Bounds;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
@@ -10,6 +12,7 @@ import javafx.scene.text.Text;
 import javafx.stage.*;
 
 public class Main extends Application {
+	static boolean isLargeGrid = false;
 
     public static void main(String[] args) {
         Application.launch(args);
@@ -17,12 +20,17 @@ public class Main extends Application {
     
     @Override
     public void start(Stage primaryStage) throws Exception {
+    	if (Params.WORLD_HEIGHT > 50 || Params.WORLD_WIDTH > 50) {
+    		isLargeGrid = true;
+    	}
+    	
     	// Root node containing the world and controlPanel
     	GridPane root = new GridPane();
     	
     	// 2D grid of the Critter world, initialized to empty 
     	GridPane world = new GridPane();
     	Critter.displayWorld(world); // create empty grid
+    	
     	
     	// doTimeStep
     	Label timeStep_l = new Label("Do Time Step");
@@ -145,9 +153,23 @@ public class Main extends Application {
     			runStats,
     			setSeed,
     			quit);
-    	root.add(world, 0, 0);
+    	if (Main.isLargeGrid) {
+    		javafx.scene.control.ScrollPane worldStackPane = new javafx.scene.control.ScrollPane();
+    		worldStackPane.setPannable(true);
+    		worldStackPane.setContent(world);
+    		// TO-DO : set the scrollpane's viewport size to be majority of left side of screen
+    		worldStackPane.setPrefViewportHeight(1000);
+    		worldStackPane.setPrefViewportWidth(1500);
+    		root.add(worldStackPane, 0, 0);
+    		GridPane.setMargin(root.getChildren().get(0), new Insets(20));
+    	}
+    	else {
+    		root.add(world, 0, 0);
+    		GridPane.setMargin(root.getChildren().get(0), new Insets(20));
+    	}
     	root.add(controller, 1, 0);
-    	primaryStage.setScene(new Scene(root, 500, 250));
+    	GridPane.setMargin(root.getChildren().get(1), new Insets(20));
+    	primaryStage.setScene(new Scene(root, 2000, 1200));
     	primaryStage.setTitle("Critters II: Jin Lee and Andy Wu");
     	primaryStage.show();
     }

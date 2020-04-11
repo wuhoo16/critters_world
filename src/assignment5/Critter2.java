@@ -23,8 +23,9 @@ import java.util.List;
  * Humans under the age of 18: run in the specified direction
  * Humans ages 18 - 69 (inclusive): walk in the specified direction
  * Humans ages 70+: take no action and just rests
+ * Only adults ages 18-69 are wise enough to look ahead before spending energy to walk forward
  * 
- * This critter tries to run away from his problems first, then fights if he/she cannot flee
+ * Upon encounters, this critter tries to run away from his problems first, then fights if he/she cannot flee
  * 
  * Randomly generated number from [0, 7] determines exploration direction, gender is also randomly generated
  * Only females with energy level 100 or above can reproduce and they must come into contact with another Critter2 to reproduce.
@@ -38,17 +39,17 @@ public class Critter2 extends Critter {
 	
 	/* START - NEW FOR PROJECT 5 */
 	public CritterShape viewShape() {
-        return CritterShape.CIRCLE;
+        return CritterShape.DIAMOND;
     }
 	
 	@Override
     public javafx.scene.paint.Color viewOutlineColor() {
-        return javafx.scene.paint.Color.GREEN;
+        return javafx.scene.paint.Color.BLACK;
     }
 	
 	@Override
     public javafx.scene.paint.Color viewFillColor() {
-        return viewColor();
+		return javafx.scene.paint.Color.BLACK;	
     }
 	/* END - NEW PROJECT 5 */
 	
@@ -103,7 +104,7 @@ public class Critter2 extends Critter {
 	/**
 	 * Each timeStep, humans age by 1 year. 
 	 * Humans under the age of 18: run in the specified direction
-	 * Humans ages 18 - 69 (inclusive): walk in the specified direction
+	 * Humans ages 18 - 69 (inclusive): walk in the specified direction ONLY if it is unoccupied
 	 * Humans ages 70+: take no action and just rests
 	 */
     @Override
@@ -113,8 +114,10 @@ public class Critter2 extends Critter {
     	if (this.age < 18) { // children
     		run(direction);
     	}
-    	else if (this.age < 70) { // adults
-    		walk(direction);
+    	else if (this.age < 70) { // adults will walk ONLY if the next space in that direction is unoccupied
+    		if (look(direction, false) == null) {
+    			walk(direction);
+    		}
     	}
     	else { // seniors
     		// do nothing (old humans always rest)
