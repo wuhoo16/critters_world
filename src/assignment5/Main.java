@@ -6,15 +6,10 @@ import java.lang.reflect.Modifier;
 import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.List;
-import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
 import java.io.File;
 
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
+import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -24,9 +19,9 @@ import javafx.scene.chart.PieChart;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.*;
-import javafx.util.Duration;
 //import sun.launcher.resources.launcher;
 //import sun.misc.Launcher;
 
@@ -48,14 +43,6 @@ public class Main extends Application {
      * @return ArrayList of Strings
      */
     private static ArrayList<String> getValidClassNames() {
-    	/*
-    	String MyPackageEdited = "";
-    	if (!myPackage.startsWith("/")) {
-           MyPackageEdited = "/" + myPackage;
-        } 
-        */
-    	
-    	//URL url = Launcher.class.getResource(MyPackageEdited);
     	URL url = Critter.class.getClassLoader().getResource(myPackage);
     	File directory = new File(url.getFile().replace("%20", " ")); // replace space unicode with actual spaces (if any folder names have spaces)
     	String[] fileNames = directory.list();
@@ -93,7 +80,7 @@ public class Main extends Application {
     		worldScrollPane = new ScrollPane();
     		worldScrollPane.setPannable(true);
     		worldScrollPane.setPrefViewportHeight(1000);
-    		worldScrollPane.setPrefViewportWidth(1000);
+    		worldScrollPane.setPrefViewportWidth(1300);
     	}
     	
     	// initialize list of critter class names that are in the assignment5 package at runtime
@@ -108,27 +95,34 @@ public class Main extends Application {
     	
     	// Label node for string results from runStats()
     	Label statsMessage = new Label("");
+    	// DEBUG System.out.println(javafx.scene.text.Font.getFamilies());
+    	statsMessage.setFont(new Font("Segoe UI", 18));
     	
     	// Pie chart node for string results from runStats()
     	PieChart statsPieChart = new PieChart();
+    	statsPieChart.setAnimated(false);
     	
     	
     	// All Control Panel nodes created below---------------------------------------------------------------------------
     	
     	// createCritter interface nodes
     	Label createCritterLabel = new Label("Create Critter");
+    	createCritterLabel.setFont(new Font("Segoe UI Semibold", 18));
     	ChoiceBox<String> createCritterMenu = new ChoiceBox<String> ();
     	createCritterMenu.getItems().addAll(critterClassNames);
     	TextField createCritter_ct = new TextField();
+    	createCritter_ct.setFont(new Font("Segoe UI", 12));
     	createCritter_ct.setPrefColumnCount(5);
     	createCritter_ct.setPromptText("Count");
     	Button createCritter_bt = new Button("Create");
+    	createCritter_bt.setFont(new Font("Segoe UI", 12));
     	createCritter_bt.setPrefWidth(55);
     	Text createCritter_err = new Text("");
     	VBox createCritter = new VBox(1, createCritterLabel, new HBox(5, createCritterMenu, createCritter_ct, createCritter_bt, createCritter_err));
     	
     	// doTimeStep interface nodes
     	Label timeStep_l = new Label("Do Time Step");
+    	timeStep_l.setFont(new Font("Segoe UI Semibold", 18));
     	TextField timeStep_ct = new TextField();
     	timeStep_ct.setPrefColumnCount(5);
     	timeStep_ct.setPromptText("Steps");
@@ -137,24 +131,9 @@ public class Main extends Application {
     	Text timeStep_err = new Text("");
     	VBox doTimeStep = new VBox(1, timeStep_l, new HBox(5, timeStep_ct, timeStep_bt, timeStep_err));
     	
-    	// Animation slider nodes
-    	Label sliderLabel = new Label("Animation Slider (timesteps/sec)");
-    	Slider animationSlider = new Slider(0.0, 100.0, 1.0);
-    	animationSlider.setPrefWidth(400);
-    	animationSlider.setShowTickMarks(true);
-    	animationSlider.setShowTickLabels(true);
-    	animationSlider.setMinorTickCount(3);
-    	animationSlider.setMajorTickUnit(20.0);
-    	Button start_bt = new Button("Start");
-    	Button stop_bt = new Button("Stop");
-    	stop_bt.setDisable(true);
-    	Timeline timeline = new Timeline();
-    	VBox slider = new VBox(1, sliderLabel, animationSlider, new HBox(5, start_bt, stop_bt));
-    	
-    	
-    	// runStats interface nodes
+    	// runStats interface nodes (must be placed before MyTimer class)
     	Label runStats_l = new Label("Display Critter Stats");
-    	// will add functionality to show multiple Critter stats at once
+    	runStats_l.setFont(new Font("Segoe UI Semibold", 18));
     	ChoiceBox<String> runStatsMenu = new ChoiceBox<String> ();
     	runStatsMenu.getItems().addAll(critterClassNames);
     	Button runStats_bt = new Button("Display");
@@ -163,8 +142,49 @@ public class Main extends Application {
     			runStats_l,
     			new HBox(5, runStatsMenu, runStats_bt, runStats_err));
     	
+    	// Animation slider nodes
+    	Label sliderLabel = new Label("Animation Slider (speed multiplier)");
+    	sliderLabel.setFont(new Font("Segoe UI Semibold", 18));
+    	Slider animationSlider = new Slider(0.0, 20.0, 1.0);
+    	animationSlider.setPrefWidth(550);
+    	animationSlider.setShowTickMarks(true);
+    	animationSlider.setShowTickLabels(true);
+    	animationSlider.setMinorTickCount(1);
+    	animationSlider.setMajorTickUnit(1);
+    	animationSlider.setSnapToTicks(true);
+    	Button start_bt = new Button("Start");
+    	Button stop_bt = new Button("Stop");
+    	stop_bt.setDisable(true);
+		class MyTimer extends AnimationTimer {
+			long prevTime;
+			
+			@Override
+			public void start() {
+				prevTime = System.nanoTime();
+				super.start();
+			}
+			@Override
+			public void handle(long currentTime) {
+				long elapsedTime = (currentTime - prevTime) ; // elapsedTime in NANOSECONDS
+				if (animationSlider.getValue() > 0.0) {
+					if (elapsedTime >= (1000000000 / animationSlider.getValue())) {
+						// DEBUG System.out.println(elapsedTime); 
+						prevTime = currentTime; // update timestamp of display event
+						Critter.worldTimeStep();
+						Critter.displayWorld(world);
+						updateStats(statsMessage, statsPieChart, runStatsMenu, runStats_err);
+					}
+				}
+				
+			}
+		}
+    	MyTimer timer = new MyTimer();
+    	VBox slider = new VBox(1, sliderLabel, animationSlider, new HBox(5, start_bt, stop_bt));
+    	
+    	
     	// setSeed interface nodes
-    	Label setSeed_l = new Label("Set seed");
+    	Label setSeed_l = new Label("Set Seed");
+    	setSeed_l.setFont(new Font("Segoe UI Semibold", 18));
     	TextField setSeed_num = new TextField();
     	setSeed_num.setPrefColumnCount(5);
     	setSeed_num.setPromptText("Seed");
@@ -237,10 +257,11 @@ public class Main extends Application {
 			}
     	});
     	
-    	// Animation slider start/stop button handler
+    	// Animation slider start button handler
     	start_bt.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
+				clearErrorMessages(timeStep_err, createCritter_err, runStats_err, setSeed_err);
 				// disable all other controls, enable stop
 				createCritter.setDisable(true);
 				doTimeStep.setDisable(true);
@@ -248,31 +269,21 @@ public class Main extends Application {
 				runStats.setDisable(true);
 				setSeed.setDisable(true);
 				clear.setDisable(true);
+				sliderLabel.setDisable(true);
 				start_bt.setDisable(true);
 				stop_bt.setDisable(false);
 				
-				timeline.setCycleCount(Timeline.INDEFINITE);
-				timeline.getKeyFrames().add(
-						new KeyFrame(Duration.millis(1000),
-								new EventHandler<ActionEvent>() {
-							@Override
-							public void handle(ActionEvent event) {
-								for(int i = 0; i < animationSlider.getValue(); i++) Critter.worldTimeStep();
-								Critter.displayWorld(world);
-								clearErrorMessages(timeStep_err, createCritter_err, runStats_err, setSeed_err);
-								updateStats(statsMessage, statsPieChart, runStatsMenu, runStats_err);
-							}
-						}));
-				// start animation
-				timeline.play();
-			}  			
-    	});
+				timer.start();
+			}
+		});
     	
+    	// Animation slider stop button handler
     	stop_bt.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
+				clearErrorMessages(timeStep_err, createCritter_err, runStats_err, setSeed_err);
 				// stop animation
-				timeline.stop();
+				timer.stop();
 				// enable all other controls, disable stop
 				createCritter.setDisable(false);
 				doTimeStep.setDisable(false);
@@ -280,11 +291,11 @@ public class Main extends Application {
 				runStats.setDisable(false);
 				setSeed.setDisable(false);
 				clear.setDisable(false);
+				sliderLabel.setDisable(false);
 				start_bt.setDisable(false);
 				stop_bt.setDisable(true);
 			}  			
     	});
-    	
     	
     	// runStats button handler
     	runStats_bt.setOnAction(new EventHandler<ActionEvent>() {
@@ -294,7 +305,6 @@ public class Main extends Application {
 				updateStats(statsMessage, statsPieChart, runStatsMenu, runStats_err);
 			}
     	});
-    	
     	
     	// setSeed button handler
     	setSeed_bt.setOnAction(new EventHandler<ActionEvent>() {
@@ -326,14 +336,14 @@ public class Main extends Application {
     
     	
     	// Controller Node containing all command interface nodes
-    	VBox controller = new VBox(5, 
+    	VBox controller = new VBox(15, 
     			createCritter,
     			doTimeStep,
     			slider,
     			runStats,
     			setSeed,
     			clearAndQuit);
-    	VBox.setMargin(clearAndQuit, new Insets(15, 0, 50, 0)); // add small margin above the clearAndQuit row of buttons and large margin below
+    	VBox.setMargin(clearAndQuit, new Insets(10, 0, 30, 0)); // add small margin above the clearAndQuit row of buttons and large margin below
     	controller.getChildren().add(statsMessage);
     	controller.getChildren().add(statsPieChart);
     	
@@ -402,7 +412,7 @@ public class Main extends Application {
 						PieChart.Data slice3 = new PieChart.Data((df.format(percentageRight) + "% " + dataLine[3].split(" ")[1]), (percentageRight / 100) * 360);
 						PieChart.Data slice4 = new PieChart.Data((df.format(percentageLeft) + "% " + dataLine[4].split(" ")[1]), (percentageLeft / 100) * 360);
 		
-						statsPieChart.setTitle("GOBLIN STATISTICS");
+						statsPieChart.setTitle("GOBLIN STATS");
 						statsPieChart.setLabelLineLength(20);
 						statsPieChart.setStartAngle(180); 
 						statsPieChart.getData().add(slice1);
@@ -414,13 +424,13 @@ public class Main extends Application {
 						
 				case "Critter1":
 					double totalVirus = Integer.parseInt(dataLine[0].split(" ")[0]);
-					double numStrainA = Integer.parseInt(dataLine[1].split(" ")[0].replace("%", ""));
-					double numStrainB = Integer.parseInt(dataLine[2].split(" ")[0].replace("%", ""));
+					double numStrainA = Integer.parseInt(dataLine[1].split(" ")[0]);
+					double numStrainB = Integer.parseInt(dataLine[2].split(" ")[0]);
 					if (totalVirus > 0) {
 						PieChart.Data sliceA = new PieChart.Data((df.format(100 * numStrainA / totalVirus) + "% " + dataLine[1].split(" ")[1]), (numStrainA / totalVirus) * 360);
 						PieChart.Data sliceB = new PieChart.Data((df.format(100 * numStrainB / totalVirus) + "% " + dataLine[2].split(" ")[1]), (numStrainB / totalVirus) * 360);
 						
-						statsPieChart.setTitle("CORONAVIRUS STATISTICS");
+						statsPieChart.setTitle("CORONAVIRUS STATS");
 						statsPieChart.setLabelLineLength(20);
 						statsPieChart.setStartAngle(180); 
 						statsPieChart.getData().add(sliceA);
@@ -436,7 +446,7 @@ public class Main extends Application {
 						PieChart.Data maleSlice = new PieChart.Data((df.format(100 * numMales / totalHumans) + "% " + dataLine[1].split(" ")[1]), (numMales / totalHumans) * 360);
 						PieChart.Data femaleSlice = new PieChart.Data((df.format(100 * numFemales / totalHumans) + "% " + dataLine[2].split(" ")[1]), (numFemales / totalHumans) * 360);
 						
-						statsPieChart.setTitle("HUMANS STATISTICS");
+						statsPieChart.setTitle("HUMANS STATS");
 						statsPieChart.setLabelLineLength(20);
 						statsPieChart.setStartAngle(180); 
 						statsPieChart.getData().add(maleSlice);
@@ -452,7 +462,7 @@ public class Main extends Application {
 						PieChart.Data sliceA = new PieChart.Data((df.format(100 * numBenign / totalTumors) + "% " + dataLine[1].split(" ")[1]), (numBenign / totalTumors) * 360);
 						PieChart.Data sliceB = new PieChart.Data((df.format(100 * numMalignant / totalTumors) + "% " + dataLine[2].split(" ")[1]), (numMalignant / totalTumors) * 360);
 						
-						statsPieChart.setTitle("SENTIENT TUMOR STATISTICS");
+						statsPieChart.setTitle("SENTIENT TUMOR STATS");
 						statsPieChart.setLabelLineLength(20);
 						statsPieChart.setStartAngle(180); 
 						statsPieChart.getData().add(sliceA);
@@ -461,14 +471,14 @@ public class Main extends Application {
 					break;
 					
 				case "Critter4":
-					double totalFires = Integer.parseInt(dataLine[0].split(" ")[0]);
-					double numUnfueled = Integer.parseInt(dataLine[1].split(" ")[0]);
-					double numFueled = Integer.parseInt(dataLine[2].split(" ")[0]);
+					double totalFires = Double.parseDouble(dataLine[0].split(" ")[0]);
+					double percentageUnfueled = Double.parseDouble(dataLine[1].split(" ")[0].replace("%", ""));
+					double percentageFueled = Double.parseDouble(dataLine[2].split(" ")[0].replace("%", ""));
 					if (totalFires > 0) {
-						PieChart.Data sliceA = new PieChart.Data((df.format(100 * numUnfueled / totalFires) + "% " + dataLine[1].split(" ")[1]), (numUnfueled / totalFires) * 360);
-						PieChart.Data sliceB = new PieChart.Data((df.format(100 * numFueled / totalFires) + "% " + dataLine[2].split(" ")[1]), (numFueled / totalFires) * 360);
+						PieChart.Data sliceA = new PieChart.Data((df.format(percentageUnfueled) + "% " + dataLine[1].split(" ")[1]), (percentageUnfueled / 100) * 360);
+						PieChart.Data sliceB = new PieChart.Data((df.format(percentageFueled) + "% " + dataLine[2].split(" ")[1]), (percentageFueled / 100) * 360);
 						
-						statsPieChart.setTitle("FIRE STATISTICS");
+						statsPieChart.setTitle("FIRE STATS");
 						statsPieChart.setLabelLineLength(20);
 						statsPieChart.setStartAngle(180); 
 						statsPieChart.getData().add(sliceA);

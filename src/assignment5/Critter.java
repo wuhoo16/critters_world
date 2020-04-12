@@ -50,6 +50,11 @@ public abstract class Critter {
 
 
     private static double cellSize = 20;
+    static {
+    	if (Params.WORLD_WIDTH < 65 && Params.WORLD_HEIGHT < 49) { // for small worlds, allow for larger cell sizes
+    		cellSize = Math.min((1300 / Params.WORLD_WIDTH), (990 / Params.WORLD_HEIGHT));
+    	}
+    }
     /* the default color is white, which I hope makes critters invisible by default
      * If you change the background color of your View component, then update the default
      * color to be the same as you background
@@ -382,24 +387,37 @@ public abstract class Critter {
 		// change background based on time of day (60-step cycle)
 		int hour = timeStep % 24;
 		javafx.scene.paint.Color background = Color.WHITE;
-		if(hour < 2) background = Color.web("#EAB029");
-		else if(hour < 4) background = Color.web("#E5DE44");
-		else if(hour < 6) background = Color.web("#EAB029");
-		else if(hour < 8) background = Color.web("#EF810E");
-		else if (hour < 10) background = Color.web("#7A5C30");
-		else if(hour < 12) background = Color.web("#053752");
-		else if(hour < 14) background = Color.web("#03293C");
-		else if(hour < 16) background = Color.web("#001A26");
-		else if(hour < 18) background = Color.web("#03293C");
-		else if(hour < 20) background = Color.web("#053752");
-		else if(hour < 22) background = Color.web("#7A5C30");
-		else background = Color.web("#EF810E");
+		
+		if(hour < 1) background = Color.web("#435670");
+		else if(hour < 2) background = Color.web("#435670");
+		else if(hour < 3) background = Color.web("#073c68"); 
+		else if(hour < 4) background = Color.web("#367397"); 
+		else if(hour < 5) background = Color.web("#7e9b9f");
+		else if(hour < 6) background = Color.web("#949f95"); 
+		else if(hour < 7) background = Color.web("#aea895");
+		else if (hour < 8) background = Color.web("#c8ad8d"); 
+		else if(hour < 9) background = Color.web("#f9e086"); 
+		else if(hour < 10) background = Color.web("#fdf4b7"); 
+		else if(hour < 11) background = Color.web("#fcf9d7"); // lightest point
+		else if(hour < 12) background = Color.web("#fcf9d7");
+		else if(hour < 13) background = Color.web("#fcf9d7"); 
+		else if(hour < 14) background = Color.web("#fdf4b7"); 
+		else if(hour < 15) background = Color.web("#f9e086");
+		else if(hour < 16) background = Color.web("#c8ad8d");
+		else if(hour < 17) background = Color.web("#aea895");
+		else if(hour < 18) background = Color.web("#949f95");
+		else if(hour < 19) background = Color.web("#7e9b9f");
+		else if(hour < 20) background = Color.web("#4f7f96");
+		else if(hour < 21) background = Color.web("#256691");
+		else if(hour < 22) background = Color.web("#367397");
+		else if(hour < 23) background = Color.web("#073c68");
+		else background = Color.web("#435670"); // darkest point
 		
     	for(int i = 0; i < Params.WORLD_WIDTH; i++) {
     		for(int j = 0; j < Params.WORLD_HEIGHT; j++) {
     			Shape cell = new Rectangle(cellSize, cellSize);
     			cell.setFill(background); // default
-    			cell.setStroke(Color.DIMGREY);
+    			cell.setStroke(Color.web("#00071a"));
     			grid.add(cell,  i, j);
     		}
     	}
@@ -432,13 +450,13 @@ public abstract class Critter {
 	    					critShape = diamond; break;
 	    	case STAR: Polygon star = new Polygon();
 	    					star.getPoints().addAll(new Double[] {
-	    							1.0, 1.0,
+	    							2.0, 2.0,
 	    							cellSize / 2, cellSize / 4,
-	    							cellSize - 1, 1.0,
+	    							cellSize - 2, 2.0,
 	    							3 * cellSize / 4, cellSize / 2,
-	    							cellSize - 1, cellSize - 1,
+	    							cellSize - 2, cellSize - 2,
 	    							cellSize / 2, 3 * cellSize / 4,
-	    							1.0, cellSize - 1,
+	    							2.0, cellSize - 2,
 	    							cellSize / 4, cellSize / 2}); 
 	    					critShape = star; break;
 	    	default: critShape = new Circle(cellSize/2, Color.WHITESMOKE); break;
@@ -542,6 +560,7 @@ public abstract class Critter {
      */
     public static void clearWorld() {
     	population.clear();
+    	timeStep = 0;
     }
 
     public static void worldTimeStep() {
