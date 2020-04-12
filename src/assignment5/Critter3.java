@@ -162,21 +162,19 @@ public class Critter3 extends Critter {
     public static String runStats(List<Critter> tumors) {
     	int totalBenign = 0;
     	int totalMalignant = 0;
+    	String statsString = "";
     	
     	for (Critter crit: tumors) {
     		Critter3 tumor = (Critter3) crit;
     		if(tumor.malignant) totalMalignant++;
     		else totalBenign++;	
     	}
-    	System.out.print(tumors.size() + " total tumors:   ");
+    	statsString += (tumors.size() + " total tumors: \n");
     	if(tumors.size() > 0) {
-    		System.out.print(totalBenign / (0.01 * tumors.size()) + "% benign   ");
-    		System.out.print(totalMalignant / (0.01 * tumors.size()) + "% malignant   ");
+    		statsString += (totalBenign / (0.01 * tumors.size()) + "% benign \n");
+    		statsString += (totalMalignant / (0.01 * tumors.size()) + "% malignant");
     	}
     	
-        System.out.println();
-        
-        // TODO: write actual return
-        return "";
+        return statsString;
     }
 }

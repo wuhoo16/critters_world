@@ -15,6 +15,7 @@ package assignment5;
 import assignment5.Critter;
 import assignment5.Critter.CritterShape;
 
+import java.text.DecimalFormat;
 import java.util.List;
 
 /**
@@ -31,6 +32,8 @@ import java.util.List;
  */
 
 public class Critter4 extends Critter {
+	
+	static DecimalFormat df = new DecimalFormat("#.##");
 	
 	/* START - NEW FOR PROJECT 5 */
 	public CritterShape viewShape() {
@@ -126,21 +129,20 @@ public class Critter4 extends Critter {
     public static String runStats(List<Critter> fires) {
     	int totalUnfueled = 0;
     	int totalFueled = 0;
+    	String statsString = "";
     	
     	for (Critter crit: fires) {
     		Critter4 fire = (Critter4) crit;
     		if(fire.fueled) totalFueled++;
     		else totalUnfueled++;	
     	}
-    	System.out.print(fires.size() + " total fires:   ");
-    	if(fires.size() > 0) {
-    		System.out.print(totalUnfueled / (0.01 * fires.size()) + "% unfueled   ");
-    		System.out.print(totalFueled / (0.01 * fires.size()) + "% fueled   ");
-    	}
     	
-        System.out.println();
-        
-        // TODO: write actual return
-        return "";
+    	statsString += (fires.size() + " total fires: \n");
+    	if(fires.size() > 0) {
+    		statsString += (df.format(totalUnfueled / (0.01 * fires.size())) + "% unfueled \n");
+    		statsString += (df.format(totalFueled / (0.01 * fires.size())) + "% fueled");
+    	}
+
+        return statsString;
     }
 }

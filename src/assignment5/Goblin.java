@@ -5,9 +5,13 @@
 
 package assignment5;
 
+import java.text.DecimalFormat;
 import java.util.List;
 
+import assignment5.Critter.TestCritter; // testing if main method to identify class files also adds classes that extend TestCritter
+
 public class Goblin extends Critter {
+	static DecimalFormat df = new DecimalFormat("#.##");
 
     @Override
     public String toString() {
@@ -74,11 +78,11 @@ public class Goblin extends Critter {
             total_back += c.genes[4];
             total_left += c.genes[5] + c.genes[6] + c.genes[7];
         }
-        str += (goblins.size() + " total Goblins    \n");
-        str += (total_straight / (GENE_TOTAL * 0.01 * goblins.size()) + "% straight \n");
-        str += ("" + total_back / (GENE_TOTAL * 0.01 * goblins.size()) + "% back \n");
-        str += ("" + total_right / (GENE_TOTAL * 0.01 * goblins.size()) + "% right \n");
-        str += ("" + total_left / (GENE_TOTAL * 0.01 * goblins.size()) + "% left \n");
+        str += (goblins.size() + " total Goblins \n");
+        str += (df.format(total_straight / (GENE_TOTAL * 0.01 * goblins.size())) + "% straight \n");
+        str += (df.format(total_back / (GENE_TOTAL * 0.01 * goblins.size())) + "% back \n");
+        str += (df.format(total_right / (GENE_TOTAL * 0.01 * goblins.size())) + "% right \n");
+        str += (df.format(total_left / (GENE_TOTAL * 0.01 * goblins.size()))+ "% left");
         return str;
     }
 

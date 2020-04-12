@@ -329,13 +329,13 @@ public abstract class Critter {
 		
         Map<String, Integer> critter_count = new HashMap<String, Integer>();
         for (Critter crit : critters) {
-            String crit_string = crit.toString();
+            String crit_string = crit.getClass().getName();
             critter_count.put(crit_string,
                     critter_count.getOrDefault(crit_string, 0) + 1);
         }
         
-        for (String critterSymbol: critter_count.keySet()) {
-            statsString += (critterSymbol + ": " + critter_count.get(critterSymbol));
+        for (String critClass: critter_count.keySet()) {
+            statsString += (critClass.replace("assignment5.", "") + ": " + critter_count.get(critClass));
             statsString += ("\n");
         }
         return statsString;
