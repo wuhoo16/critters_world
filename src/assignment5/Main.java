@@ -23,6 +23,7 @@ import javafx.scene.Scene;
 import javafx.scene.chart.PieChart;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.*;
 import javafx.util.Duration;
@@ -92,7 +93,7 @@ public class Main extends Application {
     		worldScrollPane = new ScrollPane();
     		worldScrollPane.setPannable(true);
     		worldScrollPane.setPrefViewportHeight(1000);
-    		worldScrollPane.setPrefViewportWidth(1400);
+    		worldScrollPane.setPrefViewportWidth(1000);
     	}
     	
     	// initialize list of critter class names that are in the assignment5 package at runtime
@@ -148,7 +149,7 @@ public class Main extends Application {
     	Button stop_bt = new Button("Stop");
     	stop_bt.setDisable(true);
     	Timeline timeline = new Timeline();
-    	VBox slider = new VBox(1, sliderLabel, new HBox(5, animationSlider, start_bt, stop_bt));
+    	VBox slider = new VBox(1, sliderLabel, animationSlider, new HBox(5, start_bt, stop_bt));
     	
     	
     	// runStats interface nodes
