@@ -379,10 +379,20 @@ public abstract class Critter {
      * @param grid - GridPane on which to paint the world
      */
     private static void paintGridLines(GridPane grid) {
+		// change background based on time of day (60-step cycle)
+		int hour = timeStep % 24;
+		javafx.scene.paint.Color background = Color.WHITE;
+		if(hour < 4) background = Color.web("#E5DE44");
+		else if(hour < 8) background = Color.web("#EF810E");
+		else if(hour < 12) background = Color.web("#053752");
+		else if(hour < 16) background = Color.web("#001A26");
+		else if(hour < 20) background = Color.web("#053752");
+		else background = Color.web("#EF810E");
+		
     	for(int i = 0; i < Params.WORLD_WIDTH; i++) {
     		for(int j = 0; j < Params.WORLD_HEIGHT; j++) {
     			Shape cell = new Rectangle(cellSize, cellSize);
-    			cell.setFill(Color.WHITE); // default
+    			cell.setFill(background); // default
     			cell.setStroke(Color.DIMGREY);
     			grid.add(cell,  i, j);
     		}

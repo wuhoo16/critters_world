@@ -136,13 +136,11 @@ public class Critter4 extends Critter {
     		if(fire.fueled) totalFueled++;
     		else totalUnfueled++;	
     	}
-    	
-    	statsString += (fires.size() + " total fires: \n");
-    	if(fires.size() > 0) {
-    		statsString += (df.format(totalUnfueled / (0.01 * fires.size())) + "% unfueled \n");
-    		statsString += (df.format(totalFueled / (0.01 * fires.size())) + "% fueled");
-    	}
 
-        return statsString;
+    	statsString += (fires.size() + " total fires: \n");
+    	statsString += (totalUnfueled + " unfueled \n");
+    	statsString += (totalFueled + " fueled");
+
+    	return statsString;
     }
 }

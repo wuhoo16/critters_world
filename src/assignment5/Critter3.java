@@ -170,11 +170,9 @@ public class Critter3 extends Critter {
     		else totalBenign++;	
     	}
     	statsString += (tumors.size() + " total tumors: \n");
-    	if(tumors.size() > 0) {
-    		statsString += (totalBenign / (0.01 * tumors.size()) + "% benign \n");
-    		statsString += (totalMalignant / (0.01 * tumors.size()) + "% malignant");
-    	}
-    	
+    	statsString += (totalBenign + " benign \n");
+    	statsString += (totalMalignant + " malignant");
+
         return statsString;
     }
 }

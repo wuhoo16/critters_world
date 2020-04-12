@@ -13,8 +13,8 @@ package assignment5;
 
 public class Params {
 
-    public static int WORLD_WIDTH = 64; // default: 160
-    public static int WORLD_HEIGHT = 48; // default: 80
+    public static int WORLD_WIDTH = 65; // default: 160
+    public static int WORLD_HEIGHT = 49; // default: 80
     public static int WALK_ENERGY_COST = 2;
     public static int RUN_ENERGY_COST = 5;
     public static int REST_ENERGY_COST = 1;

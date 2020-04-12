@@ -12,8 +12,9 @@ import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.io.File;
-import java.io.FilenameFilter;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -24,8 +25,9 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.text.Text;
 import javafx.stage.*;
-import sun.launcher.resources.launcher;
-import sun.misc.Launcher;
+import javafx.util.Duration;
+//import sun.launcher.resources.launcher;
+//import sun.misc.Launcher;
 
 public class Main extends Application {
 	static boolean isLargeGrid = false;
@@ -45,12 +47,15 @@ public class Main extends Application {
      * @return ArrayList of Strings
      */
     private static ArrayList<String> getValidClassNames() {
+    	/*
     	String MyPackageEdited = "";
     	if (!myPackage.startsWith("/")) {
            MyPackageEdited = "/" + myPackage;
         } 
+        */
     	
-    	URL url = Launcher.class.getResource(MyPackageEdited);
+    	//URL url = Launcher.class.getResource(MyPackageEdited);
+    	URL url = Critter.class.getClassLoader().getResource(myPackage);
     	File directory = new File(url.getFile().replace("%20", " ")); // replace space unicode with actual spaces (if any folder names have spaces)
     	String[] fileNames = directory.list();
     	ArrayList<String> classNamesList = new ArrayList<String>();
@@ -139,9 +144,11 @@ public class Main extends Application {
     	animationSlider.setShowTickLabels(true);
     	animationSlider.setMinorTickCount(3);
     	animationSlider.setMajorTickUnit(20.0);
-    	Button startStopBtn = new Button("Start/Stop");
-    	startStopBtn.setPrefWidth(75);
-    	VBox slider = new VBox(1, sliderLabel, new HBox(5, animationSlider, startStopBtn));
+    	Button start_bt = new Button("Start");
+    	Button stop_bt = new Button("Stop");
+    	stop_bt.setDisable(true);
+    	Timeline timeline = new Timeline();
+    	VBox slider = new VBox(1, sliderLabel, new HBox(5, animationSlider, start_bt, stop_bt));
     	
     	
     	// runStats interface nodes
@@ -230,21 +237,51 @@ public class Main extends Application {
     	});
     	
     	// Animation slider start/stop button handler
-    	startStopBtn.setOnAction(new EventHandler<ActionEvent>() {
+    	start_bt.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				// toggle flag... however might cause concurrent modification exception so pherhaps we need to add a stop button and use a different handler
-				if (isRunning) { isRunning = false;}
-				else { isRunning = true;}
+				// disable all other controls, enable stop
+				createCritter.setDisable(true);
+				doTimeStep.setDisable(true);
+				animationSlider.setDisable(true);
+				runStats.setDisable(true);
+				setSeed.setDisable(true);
+				clear.setDisable(true);
+				start_bt.setDisable(true);
+				stop_bt.setDisable(false);
 				
-				int timeStepsValue = (int) animationSlider.getValue();
-				while (isRunning) { // while startStop button has been pressed and hasn't been pressed again...
-					// TODO (disable all other buttons besides startStopBtn, and do timeStepsValue # of timeSteps every 1 second
-				}
-				
-				// TODO (if isRunning == false enable other buttons again before leaving handler)
-			}
-    			
+				timeline.setCycleCount(Timeline.INDEFINITE);
+				timeline.getKeyFrames().add(
+						new KeyFrame(Duration.millis(1000),
+								new EventHandler<ActionEvent>() {
+							@Override
+							public void handle(ActionEvent event) {
+								for(int i = 0; i < animationSlider.getValue(); i++) Critter.worldTimeStep();
+								Critter.displayWorld(world);
+								clearErrorMessages(timeStep_err, createCritter_err, runStats_err, setSeed_err);
+								updateStats(statsMessage, statsPieChart, runStatsMenu, runStats_err);
+							}
+						}));
+				// start animation
+				timeline.play();
+			}  			
+    	});
+    	
+    	stop_bt.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				// stop animation
+				timeline.stop();
+				// enable all other controls, disable stop
+				createCritter.setDisable(false);
+				doTimeStep.setDisable(false);
+				animationSlider.setDisable(false);
+				runStats.setDisable(false);
+				setSeed.setDisable(false);
+				clear.setDisable(false);
+				start_bt.setDisable(false);
+				stop_bt.setDisable(true);
+			}  			
     	});
     	
     	
@@ -376,8 +413,8 @@ public class Main extends Application {
 						
 				case "Critter1":
 					double totalVirus = Integer.parseInt(dataLine[0].split(" ")[0]);
-					double numStrainA = Integer.parseInt(dataLine[1].split(" ")[0]);
-					double numStrainB = Integer.parseInt(dataLine[2].split(" ")[0]);
+					double numStrainA = Integer.parseInt(dataLine[1].split(" ")[0].replace("%", ""));
+					double numStrainB = Integer.parseInt(dataLine[2].split(" ")[0].replace("%", ""));
 					if (totalVirus > 0) {
 						PieChart.Data sliceA = new PieChart.Data((df.format(100 * numStrainA / totalVirus) + "% " + dataLine[1].split(" ")[1]), (numStrainA / totalVirus) * 360);
 						PieChart.Data sliceB = new PieChart.Data((df.format(100 * numStrainB / totalVirus) + "% " + dataLine[2].split(" ")[1]), (numStrainB / totalVirus) * 360);
@@ -407,11 +444,35 @@ public class Main extends Application {
 					break;
 					
 				case "Critter3":
-					// TODO
+					double totalTumors = Integer.parseInt(dataLine[0].split(" ")[0]);
+					double numBenign = Integer.parseInt(dataLine[1].split(" ")[0]);
+					double numMalignant = Integer.parseInt(dataLine[2].split(" ")[0]);
+					if (totalTumors > 0) {
+						PieChart.Data sliceA = new PieChart.Data((df.format(100 * numBenign / totalTumors) + "% " + dataLine[1].split(" ")[1]), (numBenign / totalTumors) * 360);
+						PieChart.Data sliceB = new PieChart.Data((df.format(100 * numMalignant / totalTumors) + "% " + dataLine[2].split(" ")[1]), (numMalignant / totalTumors) * 360);
+						
+						statsPieChart.setTitle("SENTIENT TUMOR STATISTICS");
+						statsPieChart.setLabelLineLength(20);
+						statsPieChart.setStartAngle(180); 
+						statsPieChart.getData().add(sliceA);
+						statsPieChart.getData().add(sliceB);
+					}
 					break;
 					
 				case "Critter4":
-					// TODO
+					double totalFires = Integer.parseInt(dataLine[0].split(" ")[0]);
+					double numUnfueled = Integer.parseInt(dataLine[1].split(" ")[0]);
+					double numFueled = Integer.parseInt(dataLine[2].split(" ")[0]);
+					if (totalFires > 0) {
+						PieChart.Data sliceA = new PieChart.Data((df.format(100 * numUnfueled / totalFires) + "% " + dataLine[1].split(" ")[1]), (numUnfueled / totalFires) * 360);
+						PieChart.Data sliceB = new PieChart.Data((df.format(100 * numFueled / totalFires) + "% " + dataLine[2].split(" ")[1]), (numFueled / totalFires) * 360);
+						
+						statsPieChart.setTitle("FIRE STATISTICS");
+						statsPieChart.setLabelLineLength(20);
+						statsPieChart.setStartAngle(180); 
+						statsPieChart.getData().add(sliceA);
+						statsPieChart.getData().add(sliceB);
+					}
 					break;
 					
 				default: // other critter classes may have unknown return string formatting from their runStats() -> we cannot safely parse and add data to piechart
