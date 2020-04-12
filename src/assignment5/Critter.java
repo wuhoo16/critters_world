@@ -382,11 +382,17 @@ public abstract class Critter {
 		// change background based on time of day (60-step cycle)
 		int hour = timeStep % 24;
 		javafx.scene.paint.Color background = Color.WHITE;
-		if(hour < 4) background = Color.web("#E5DE44");
+		if(hour < 2) background = Color.web("#EAB029");
+		else if(hour < 4) background = Color.web("#E5DE44");
+		else if(hour < 6) background = Color.web("#EAB029");
 		else if(hour < 8) background = Color.web("#EF810E");
+		else if (hour < 10) background = Color.web("#7A5C30");
 		else if(hour < 12) background = Color.web("#053752");
+		else if(hour < 14) background = Color.web("#03293C");
 		else if(hour < 16) background = Color.web("#001A26");
+		else if(hour < 18) background = Color.web("#03293C");
 		else if(hour < 20) background = Color.web("#053752");
+		else if(hour < 22) background = Color.web("#7A5C30");
 		else background = Color.web("#EF810E");
 		
     	for(int i = 0; i < Params.WORLD_WIDTH; i++) {

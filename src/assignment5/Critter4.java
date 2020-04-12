@@ -94,8 +94,18 @@ public class Critter4 extends Critter {
      */
     @Override
     public boolean fight(String opponent) {
-    	if(opponent.equals("@")) fueled = true;
-        return true;
+    	if(opponent == "@") {
+    		fueled = true;
+    	// if there is a clover within walk/run distance, move to it instead
+    	
+    	} else if(look(dir,false) == "@") {
+    		walk(dir); 
+    		return false;
+    	} else if(look(dir, true) == "@") {
+    		run(dir);
+    		return false;
+    	}
+    	return true;
     }
 
     
