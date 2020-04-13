@@ -96,7 +96,7 @@ public class Main extends Application {
     	// Label node for string results from runStats()
     	Label statsMessage = new Label("");
     	// DEBUG System.out.println(javafx.scene.text.Font.getFamilies());
-    	statsMessage.setFont(new Font("Segoe UI", 18));
+    	statsMessage.setFont(new Font("Segoe UI", 16));
     	
     	// Pie chart node for string results from runStats()
     	PieChart statsPieChart = new PieChart();
@@ -343,7 +343,7 @@ public class Main extends Application {
     			runStats,
     			setSeed,
     			clearAndQuit);
-    	VBox.setMargin(clearAndQuit, new Insets(10, 0, 30, 0)); // add small margin above the clearAndQuit row of buttons and large margin below
+    	VBox.setMargin(clearAndQuit, new Insets(10, 0, 20, 0)); // add small margin above the clearAndQuit row of buttons and large margin below
     	controller.getChildren().add(statsMessage);
     	controller.getChildren().add(statsPieChart);
     	
