@@ -49,7 +49,7 @@ public class Critter2 extends Critter {
 	
 	@Override
     public javafx.scene.paint.Color viewFillColor() {
-		return javafx.scene.paint.Color.BLACK;	
+		return javafx.scene.paint.Color.web("#efcfb8");	
     }
 	/* END - NEW PROJECT 5 */
 	

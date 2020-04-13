@@ -35,6 +35,6 @@ public class Clover extends TestCritter {
     }
 
     public javafx.scene.paint.Color viewColor() {
-        return javafx.scene.paint.Color.GREEN;
+        return javafx.scene.paint.Color.web("#aaffaa");
     }
 }

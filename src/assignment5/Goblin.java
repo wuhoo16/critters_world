@@ -88,7 +88,7 @@ public class Goblin extends Critter {
 
     @Override
     public CritterShape viewShape() {
-        return CritterShape.TRIANGLE;
+        return CritterShape.SQUARE;
     }
 
     @Override
