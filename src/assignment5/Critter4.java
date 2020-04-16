@@ -1,6 +1,6 @@
 /*
  * CRITTERS Critter4.java (WILDFIRE)
- * EE422C Project 4 submission by
+ * EE422C Project 5 submission by
  * Jin Lee
  * jl67888
  * 16295
@@ -148,8 +148,8 @@ public class Critter4 extends Critter {
     	}
 
     	statsString += (fires.size() + " total fires: \n");
-    	statsString += (totalUnfueled + " unfueled \n");
-    	statsString += (totalFueled + " fueled");
+		statsString += (df.format(totalUnfueled / (0.01 * fires.size())) + "% unfueled \n");
+		statsString += (df.format(totalFueled / (0.01 * fires.size())) + "% fueled");
 
     	return statsString;
     }
