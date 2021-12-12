@@ -1,4 +1,4 @@
-# Project 5 - Critters GUI
+# World of Critters: A simulation inspired by Conway's Game of Life
 
 To download this repo run the following command or use the git features of your
 IDE.
